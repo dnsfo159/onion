@@ -1,0 +1,134 @@
+type View
+@model
+@key(name: "viewTest", fields: ["createdAt"])
+@searchable
+{
+  id: ID!
+  title: String!
+  body:String!
+  createdAt:String!
+}
+
+type Actor
+@model
+{
+  id: ID!
+  name: String!
+  firstName: String!
+  lastName: String!
+  age: Int!
+  movies: String!
+
+
+}
+
+type Mber @model
+{
+  id: ID!
+  email: String!                  #유저의 아이디
+  password: String!               #유저의 비밀번호
+  mberSeCode: String!             #유저의 구분코드 일반회원 정기결제회원
+  mberPremum: AWSDateTime         #월정액 기간
+  stplatAgreAt: Boolean!          #약관동의여부
+  stplatAgreDt: AWSDateTime!      #약관동의일시
+  indvdlinfoAgreAt: Boolean!      #개인정보동의여부
+  indvdlinfoAgreDt: AWSDateTime!  #개인정보동의일시
+  history:[ContentHistory]!@connection(keyName: "MberId", fields: ["id"])   #히스토리 연결된 테이블
+  voc:[Voc]! @connection(keyName: "MberId", fields: ["id"])                 #문의사항 연결된 테이블
+}
+
+type Content @model{
+  id: ID!
+  sj: String!           #제목
+  explan: String!       #설명
+  sortation: String!    #웹툰구분 오리지널 시리즈 요일 웹툰
+  mainImageUrl: String  #대표이미지 URL
+  sumImageUrl: String   #썸네일 이미지 URL
+  bannerAt: Boolean     #베너여부
+  letter: String        #글
+  paint: String         #그림
+  plot: String          #줄거리
+  genre: String         #장르
+  mon: Boolean          #월  웹툰구분이 요일 웹툰일경우 데이터를 집어넣습니다.
+  tue: Boolean          #화
+  wed: Boolean          #수
+  thu: Boolean          #목
+  fri: Boolean          #금
+  sat: Boolean          #토
+  sun: Boolean          #일
+  detail: [ContentDetail]! @connection(keyName: "ContentDetailId", fields: ["id"])
+  label: [ContentJoinLabel]! @connection(keyName:"ContentLabel", fields:["id"])
+}
+
+type label @model
+{
+  id: ID!
+  name: String!
+  imageUrl: String
+  content: [ContentJoinLabel]! @connection(keyName:"LabelContent", fields:["id"])
+}
+
+type ContentJoinLabel @model
+@key(name: "ContentLabel", fields: ["contentId", "labelId"])
+@key(name: "LabelContent", fields: ["labelId", "contentId"]){
+  id: ID!
+  contentId: ID!
+  labelId: ID!
+  content: Content! @connection(fields:["contentId"])
+  label: label! @connection(fields:["labelId"])
+}
+
+type ContentDetail @model
+@key(name: "ContentDetailId", fields: ["contentId"])
+{
+  id: ID!
+  contentId: ID!      #컨텐츠SEQ
+  sj: String!         #제목
+  imageUrl: String    #회차별 이미지 URL
+  viewCount: Int      #뷰카운트
+  freeAt: Boolean!    #유,무료
+  content:[Content]! @connection(fields:["contentId"])
+  history:[ContentHistory]! @connection(keyName:"ContentDetailId", fields:["id"])
+}
+type ContentHistory @model
+@key(name: "MberId", fields: ["mberId", "contentDetailId"])
+@key(name: "ContentDetailId", fields: ["contentDetailId", "mberId"]){
+  id: ID!
+  mberId: ID!
+  contentDetailId: ID!
+  mber: Mber!  @connection(fields: ["mberId"])
+  contentDetail: ContentDetail!  @connection(fields: ["contentDetailId"])
+}
+
+type Voc @model
+@key(name: "MberId", fields: ["mberId"])
+{
+  id: ID!
+  mberId: ID!           #User와 연결하고있는 이메일
+  email: String!        #문의를 한 이메일
+  processAt: Boolean!   #처리여부
+  vocCode: String!      #문의 구분코드
+  sj: String!           #제목
+  cn: String!           #내용
+  answer: String        #답변자
+  answerCn: String      #답변내용
+  answerDt: AWSDateTime #답변일시
+}
+
+type Faq @model
+{
+  id: ID!
+  sj: String!         #제목
+  cn: String!         #내용
+  faqCode: String!    #게시판코드
+  upperAt: Boolean    #상단고정
+}
+
+type contentlog @model
+{
+  id: ID!
+  contentId: ID!
+  contentDetailId: ID!
+  mberId: ID!
+  pureView: Int!
+}
