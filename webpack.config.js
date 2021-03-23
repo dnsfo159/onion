@@ -1,4 +1,4 @@
-const webpack = require('webpack');
+const path = require("path");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const port = process.env.PORT || 3000;
@@ -7,7 +7,15 @@ module.exports = {
     mode: 'development',
     entry: './src/index.js',
     output: {
-        filename: '[name].[hash].js'
+        filename: "bundle.js",
+        path: path.resolve(__dirname + "/build"),
+        publicPath: '/'
+    },
+    devServer: {
+        host: 'localhost',
+        port: port,
+        historyApiFallback: true,
+        open: true
     },
     devtool: 'inline-source-map',
     module: {
@@ -41,10 +49,4 @@ module.exports = {
             favicon: 'public/favicon.ico'
         })
     ],
-    devServer: {
-        host: 'localhost',
-        port: port,
-        historyApiFallback: true,
-        open: true
-    }
 };

@@ -19,12 +19,6 @@ const client = new AWSAppSyncClient({
         type: AUTH_TYPE.API_KEY,
         apiKey: aws_config.aws_appsync_apiKey,
     },
-    Storage: {
-        AWSS3: {
-            bucket: 'oniontoon-20210316171844-hostingbucket-dev', //REQUIRED -  Amazon S3 bucket name public?
-            region: aws_config.aws_appsync_region
-        }
-    }
 });
 
 
